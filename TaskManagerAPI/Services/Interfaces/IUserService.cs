@@ -1,6 +1,11 @@
-﻿namespace TaskManagerAPI.Services.Interfaces
+﻿using TaskManagerAPI.DTOs;
+using TaskManagerAPI.Models;
+
+namespace TaskManagerAPI.Services.Interfaces
 {
-    public class IUserService
+    public interface IUserService
     {
+        Task<bool> RegisterUserAsync(UserDto userDto);
+        Task<User> AuthenticateUserAsync(LoginDto loginDto);
     }
 }

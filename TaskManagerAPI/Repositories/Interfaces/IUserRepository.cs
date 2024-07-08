@@ -1,6 +1,10 @@
-﻿namespace TaskManagerAPI.Repositories.Interfaces
+﻿using TaskManagerAPI.Models;
+
+namespace TaskManagerAPI.Repositories.Interfaces
 {
-    public class IUserRepository
+    public interface IUserRepository
     {
+        Task<User> GetUserByEmailAsync(string email);
+        Task AddUserAsync(User user);
     }
 }
