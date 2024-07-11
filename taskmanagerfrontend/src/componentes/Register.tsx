@@ -10,31 +10,37 @@ const Register: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [showModal, setShowModal] = useState<boolean>(false);
     const [modalMessage, setModalMessage] = useState<string>('');
+    const [modalTitle, setModalTitle] = useState<string>('');
     const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (!name || !email || !password || !confirmPassword) {
+            setModalTitle('Error');
             setModalMessage('All fields are required');
             setShowModal(true);
             return;
         }
         if (password !== confirmPassword) {
+            setModalTitle('Error');
             setModalMessage('Passwords do not match');
             setShowModal(true);
             return;
         }
         if (password.length < 6) {
+            setModalTitle('Error');
             setModalMessage('Password must be at least 6 characters long');
             setShowModal(true);
             return;
         }
         try {
             await api.post('/auth/register', { name, email, passwordHash: password });
+            setModalTitle('Success');
             setModalMessage('User registered successfully');
             setShowModal(true);
         } catch (error) {
             console.error('Registration failed', error);
+            setModalTitle('Error');
             setModalMessage('Registration failed, please try again');
             setShowModal(true);
         }
@@ -42,14 +48,14 @@ const Register: React.FC = () => {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        if (modalMessage === 'User registered successfully') {
+        if (modalTitle === 'Success') {
             navigate('/login'); // Navigate to login page after successful registration
         }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
@@ -111,9 +117,7 @@ const Register: React.FC = () => {
                     </div>
                 </form>
             </div>
-            {showModal && (
-                <ModalRegister message={modalMessage} onClose={handleCloseModal} />
-            )}
+            {showModal && <ModalRegister title={modalTitle} message={modalMessage} onClose={handleCloseModal} />}
         </div>
     );
 };
