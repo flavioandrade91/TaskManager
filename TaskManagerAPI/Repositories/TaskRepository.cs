@@ -14,9 +14,17 @@ namespace TaskManagerAPI.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<TaskItem>> GetTasksAsync()
+        public async Task<IEnumerable<TaskItem>> GetTasksAsync(int pageNumber, int pageSize)
         {
-            return await _context.Tasks.ToListAsync();
+            return await _context.Tasks
+                                 .Skip((pageNumber - 1) * pageSize)
+                                 .Take(pageSize)
+                                 .ToListAsync();
+        }
+
+        public async Task<int> GetTotalTaskCountAsync()
+        {
+            return await _context.Tasks.CountAsync();
         }
 
         public async Task<TaskItem> GetTaskByIdAsync(Guid id)
@@ -47,4 +55,3 @@ namespace TaskManagerAPI.Repositories
         }
     }
 }
-

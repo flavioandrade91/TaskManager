@@ -9,7 +9,13 @@ const Logout: React.FC = () => {
         navigate('/login'); // Use navigate diretamente
     }, [navigate]);
 
-    return <div>Logging out...</div>;
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="bg-white p-8 rounded-lg shadow-lg">
+                <p className="text-xl font-bold">Logging out...</p>
+            </div>
+        </div>
+    );
 };
 
 export default Logout;

@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagerAPI.DTOs;
 using TaskManagerAPI.Models;
 using TaskManagerAPI.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TaskManagerAPI.Controllers
 {
@@ -18,13 +21,6 @@ namespace TaskManagerAPI.Controllers
             _taskService = taskService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks()
-        {
-            var tasks = await _taskService.GetTasksAsync();
-            return Ok(tasks);
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskItem>> GetTask(Guid id)
         {
@@ -36,11 +32,26 @@ namespace TaskManagerAPI.Controllers
             return Ok(task);
         }
 
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateTaskStatus(Guid id, [FromBody] UpdateTaskStatusDto statusDto)
+        {
+            await _taskService.UpdateTaskStatusAsync(id, statusDto.IsCompleted);
+            return NoContent();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetTasks([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 4)
+        {
+            var tasks = await _taskService.GetTasksAsync(pageNumber, pageSize);
+            var totalCount = await _taskService.GetTotalTaskCountAsync();
+            return Ok(new { tasks, totalCount });
+        }
+
         [HttpPost]
         public async Task<ActionResult> AddTask(TaskDto taskDto)
         {
-            await _taskService.AddTaskAsync(taskDto);
-            return CreatedAtAction(nameof(GetTasks), new { });
+            var taskId = await _taskService.AddTaskAsync(taskDto);
+            return CreatedAtAction(nameof(GetTask), new { id = taskId }, taskDto);
         }
 
         [HttpPut("{id}")]

@@ -21,10 +21,14 @@ namespace TaskManagerAPI.Controllers
             _userService = userService;
             _configuration = configuration;
         }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserDto userDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var result = await _userService.RegisterUserAsync(userDto);
             if (!result)
             {
@@ -32,6 +36,7 @@ namespace TaskManagerAPI.Controllers
             }
             return Ok("User registered successfully.");
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
